@@ -1,0 +1,1944 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Frozen — Profile</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* ============ ПЕРЕМЕННЫЕ / ТЕМА ============ */
+:root{
+  --bg:#06090f;
+  --bg-glow-1:rgba(56,189,248,.14);
+  --bg-glow-2:rgba(14,165,233,.10);
+  --panel:rgba(15,24,38,.72);
+  --panel-solid:#0f1826;
+  --panel-2:#131f30;
+  --panel-3:#182741;
+  --border:#1c2a3d;
+  --border-2:#25394f;
+  --text:#e8f2ff;
+  --text-2:#a9bed6;
+  --muted:#728aa3;
+  --accent:#38bdf8;
+  --accent-2:#0ea5e9;
+  --accent-3:#22d3ee;
+  --accent-dim:rgba(56,189,248,.12);
+  --danger:#f87171;
+  --ok:#34d399;
+  --radius:18px;
+  --radius-sm:12px;
+  --shadow:0 18px 50px -20px rgba(0,0,0,.9);
+  --glow:0 0 0 1px rgba(56,189,248,.18), 0 10px 40px -12px rgba(56,189,248,.35);
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  min-height:100vh;
+  line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+
+/* фоновые свечения */
+body::before{
+  content:'';
+  position:fixed;inset:0;z-index:-2;
+  background:
+    radial-gradient(900px 600px at 12% -5%, var(--bg-glow-1), transparent 60%),
+    radial-gradient(800px 600px at 92% 8%, var(--bg-glow-2), transparent 60%),
+    radial-gradient(1000px 800px at 50% 110%, rgba(14,165,233,.08), transparent 65%);
+}
+body::after{
+  content:'';
+  position:fixed;inset:0;z-index:-1;pointer-events:none;
+  background-image:
+    linear-gradient(rgba(56,189,248,.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(56,189,248,.035) 1px, transparent 1px);
+  background-size:52px 52px;
+  mask-image:radial-gradient(circle at 50% 20%, #000 0%, transparent 78%);
+  -webkit-mask-image:radial-gradient(circle at 50% 20%, #000 0%, transparent 78%);
+}
+
+::-webkit-scrollbar{width:10px;height:10px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:#1e2f45;border-radius:10px;border:2px solid var(--bg)}
+::-webkit-scrollbar-thumb:hover{background:#2a4260}
+
+::selection{background:rgba(56,189,248,.3);color:#fff}
+
+/* ============ ЛЭЙАУТ ============ */
+.app{
+  display:grid;
+  grid-template-columns:352px minmax(0,1fr);
+  gap:26px;
+  max-width:1420px;
+  margin:0 auto;
+  padding:26px;
+  align-items:start;
+}
+
+/* ============ ЛЕВАЯ ПАНЕЛЬ — ПРОФИЛЬ ============ */
+.sidebar{
+  position:sticky;
+  top:26px;
+  max-height:calc(100vh - 52px);
+  overflow-y:auto;
+  overflow-x:hidden;
+  background:var(--panel);
+  backdrop-filter:blur(20px);
+  -webkit-backdrop-filter:blur(20px);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:26px 22px 20px;
+  box-shadow:var(--shadow);
+  display:flex;
+  flex-direction:column;
+  gap:18px;
+  animation:fadeUp .6s cubic-bezier(.22,1,.36,1) both;
+}
+.sidebar::-webkit-scrollbar{width:6px}
+.sidebar::before{
+  content:'';
+  position:absolute;
+  top:-1px;left:12%;right:12%;height:1px;
+  background:linear-gradient(90deg,transparent,var(--accent),transparent);
+  opacity:.7;
+}
+
+/* аватар */
+.avatar-wrap{
+  position:relative;
+  width:118px;height:118px;
+  margin:4px auto 2px;
+  flex-shrink:0;
+}
+.avatar-ring{
+  position:absolute;inset:-6px;
+  border-radius:50%;
+  background:conic-gradient(from 180deg, var(--accent), var(--accent-3), #6366f1, var(--accent));
+  filter:blur(.4px);
+  animation:spin 7s linear infinite;
+  opacity:.85;
+}
+.avatar-wrap::after{
+  content:'';
+  position:absolute;inset:-6px;
+  border-radius:50%;
+  background:var(--panel-solid);
+  z-index:0;
+  margin:3px;
+}
+.avatar-wrap img{
+  position:relative;
+  z-index:1;
+  width:100%;height:100%;
+  border-radius:50%;
+  object-fit:cover;
+  display:block;
+  border:3px solid var(--panel-solid);
+  background:var(--panel-2);
+}
+.online-dot{
+  position:absolute;
+  z-index:2;
+  right:6px;bottom:6px;
+  width:20px;height:20px;
+  border-radius:50%;
+  background:var(--ok);
+  border:3px solid var(--panel-solid);
+  box-shadow:0 0 12px rgba(52,211,153,.9);
+}
+
+/* имя */
+.name-row{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:7px;
+  flex-wrap:wrap;
+}
+.name{
+  font-size:1.5rem;
+  font-weight:800;
+  letter-spacing:-.02em;
+  background:linear-gradient(180deg,#ffffff,#9fd8f5);
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+}
+.badge-verified{
+  width:22px;height:22px;
+  flex-shrink:0;
+  filter:drop-shadow(0 0 8px rgba(56,189,248,.75));
+}
+.badge-verified.hidden{display:none}
+
+/* страна */
+.country{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  font-size:.9rem;
+  color:var(--text-2);
+  font-weight:500;
+}
+.country .flag{
+  font-size:1.15rem;
+  line-height:1;
+  filter:drop-shadow(0 2px 4px rgba(0,0,0,.5));
+}
+
+/* описание */
+.bio{
+  text-align:center;
+  font-size:.895rem;
+  color:var(--text-2);
+  line-height:1.65;
+  padding:14px 4px;
+  border-top:1px solid var(--border);
+  border-bottom:1px solid var(--border);
+  white-space:pre-wrap;
+  word-break:break-word;
+}
+
+/* соцсети */
+.socials{
+  display:flex;
+  flex-direction:column;
+  gap:9px;
+}
+.social{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:11px 14px;
+  border-radius:var(--radius-sm);
+  background:linear-gradient(135deg, rgba(19,31,48,.9), rgba(15,24,38,.6));
+  border:1px solid var(--border);
+  color:var(--text-2);
+  text-decoration:none;
+  font-size:.87rem;
+  font-weight:600;
+  transition:.25s cubic-bezier(.22,1,.36,1);
+  position:relative;
+  overflow:hidden;
+}
+.social svg{width:19px;height:19px;flex-shrink:0;transition:.25s}
+.social .arrow{
+  margin-left:auto;
+  opacity:0;
+  transform:translateX(-6px);
+  transition:.25s;
+  font-size:.9rem;
+  color:var(--accent);
+}
+.social:hover{
+  color:#fff;
+  border-color:var(--border-2);
+  transform:translateX(4px);
+  box-shadow:var(--glow);
+}
+.social:hover .arrow{opacity:1;transform:translateX(0)}
+.social:hover svg{transform:scale(1.12)}
+.social.tg:hover{background:linear-gradient(135deg,rgba(41,182,246,.18),rgba(15,24,38,.6))}
+.social.tt:hover{background:linear-gradient(135deg,rgba(34,211,238,.16),rgba(15,24,38,.6))}
+.social.ig:hover{background:linear-gradient(135deg,rgba(168,85,247,.16),rgba(15,24,38,.6))}
+.social.tg svg{color:#29b6f6}
+.social.tt svg{color:#22d3ee}
+.social.ig svg{color:#c084fc}
+
+/* Frozen Studio */
+.studio{
+  margin-top:auto;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  padding:15px 16px;
+  border-radius:var(--radius-sm);
+  text-decoration:none;
+  font-weight:800;
+  font-size:.95rem;
+  letter-spacing:.03em;
+  color:#04121e;
+  background:linear-gradient(120deg,var(--accent-3),var(--accent),var(--accent-2));
+  background-size:200% 200%;
+  box-shadow:0 10px 30px -10px rgba(56,189,248,.75);
+  transition:.35s cubic-bezier(.22,1,.36,1);
+  position:relative;
+  overflow:hidden;
+}
+.studio::after{
+  content:'';
+  position:absolute;
+  inset:0;
+  background:linear-gradient(110deg,transparent 30%,rgba(255,255,255,.55) 50%,transparent 70%);
+  transform:translateX(-120%);
+  transition:transform .7s;
+}
+.studio:hover{transform:translateY(-3px);background-position:100% 50%;box-shadow:0 16px 40px -12px rgba(56,189,248,.95)}
+.studio:hover::after{transform:translateX(120%)}
+.studio svg{width:17px;height:17px}
+
+/* ============ ПРАВАЯ ЧАСТЬ — ЛЕНТА ============ */
+.feed{
+  display:flex;
+  flex-direction:column;
+  gap:20px;
+  min-width:0;
+  padding-bottom:60px;
+}
+
+.feed-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+  padding:20px 24px;
+  border-radius:var(--radius);
+  background:var(--panel);
+  backdrop-filter:blur(20px);
+  -webkit-backdrop-filter:blur(20px);
+  border:1px solid var(--border);
+  box-shadow:var(--shadow);
+  animation:fadeUp .6s .05s cubic-bezier(.22,1,.36,1) both;
+}
+.feed-title{
+  font-size:1.2rem;
+  font-weight:800;
+  letter-spacing:-.01em;
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+.feed-title .dot{
+  width:8px;height:8px;border-radius:50%;
+  background:var(--accent);
+  box-shadow:0 0 12px var(--accent);
+  animation:pulse 2s infinite;
+}
+.feed-sub{font-size:.8rem;color:var(--muted);font-weight:500;margin-top:2px}
+
+.btn-admin{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:10px 16px;
+  border-radius:11px;
+  border:1px solid var(--border-2);
+  background:rgba(19,31,48,.8);
+  color:var(--text-2);
+  font:inherit;
+  font-size:.82rem;
+  font-weight:600;
+  cursor:pointer;
+  transition:.22s;
+  white-space:nowrap;
+}
+.btn-admin:hover{color:#fff;border-color:var(--accent);box-shadow:var(--glow);background:rgba(56,189,248,.1)}
+.btn-admin svg{width:15px;height:15px}
+.btn-admin.active{background:var(--accent);color:#04121e;border-color:var(--accent)}
+
+/* карточка поста */
+.post{
+  background:var(--panel);
+  backdrop-filter:blur(20px);
+  -webkit-backdrop-filter:blur(20px);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:22px 24px;
+  box-shadow:var(--shadow);
+  position:relative;
+  transition:.3s cubic-bezier(.22,1,.36,1);
+  animation:fadeUp .5s cubic-bezier(.22,1,.36,1) both;
+  overflow:hidden;
+}
+.post::before{
+  content:'';
+  position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(56,189,248,.5),transparent);
+  opacity:0;transition:.35s;
+}
+.post:hover{border-color:var(--border-2);transform:translateY(-2px)}
+.post:hover::before{opacity:1}
+
+.post-head{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  margin-bottom:14px;
+}
+.post-avatar{
+  width:42px;height:42px;
+  border-radius:50%;
+  object-fit:cover;
+  border:2px solid var(--border-2);
+  flex-shrink:0;
+  background:var(--panel-2);
+}
+.post-meta{min-width:0;flex:1}
+.post-name{
+  font-weight:700;
+  font-size:.9rem;
+  display:flex;align-items:center;gap:5px;
+}
+.post-name svg{width:15px;height:15px;flex-shrink:0}
+.post-time{font-size:.74rem;color:var(--muted);font-weight:500}
+
+.post-del{
+  width:32px;height:32px;
+  border-radius:9px;
+  border:1px solid rgba(248,113,113,.3);
+  background:rgba(248,113,113,.1);
+  color:var(--danger);
+  font-size:1.05rem;
+  line-height:1;
+  cursor:pointer;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  transition:.2s;
+  flex-shrink:0;
+}
+.post-del:hover{background:rgba(248,113,113,.25);transform:scale(1.08)}
+body.admin .post-del{display:flex}
+
+/* контент поста */
+.post-text{
+  font-size:.94rem;
+  line-height:1.7;
+  color:var(--text);
+  white-space:pre-wrap;
+  word-break:break-word;
+}
+.post-text a{color:var(--accent);text-decoration:none;border-bottom:1px solid rgba(56,189,248,.35)}
+.post-text a:hover{border-bottom-color:var(--accent)}
+
+.post-media{
+  margin-top:14px;
+  border-radius:var(--radius-sm);
+  overflow:hidden;
+  border:1px solid var(--border);
+  background:#04070c;
+  line-height:0;
+}
+.post-media img,
+.post-media video{width:100%;display:block;max-height:560px;object-fit:contain;background:#04070c}
+.post-media iframe{width:100%;aspect-ratio:16/9;border:0;display:block}
+
+/* ссылка-карточка */
+.link-card{
+  margin-top:14px;
+  display:block;
+  text-decoration:none;
+  border:1px solid var(--border);
+  border-radius:var(--radius-sm);
+  padding:16px 18px;
+  background:linear-gradient(135deg, rgba(19,31,48,.85), rgba(11,18,30,.6));
+  transition:.25s;
+  position:relative;
+  overflow:hidden;
+}
+.link-card:hover{border-color:var(--accent);box-shadow:var(--glow);transform:translateY(-2px)}
+.link-card .lc-label{
+  font-size:.68rem;
+  text-transform:uppercase;
+  letter-spacing:.12em;
+  color:var(--accent);
+  font-weight:700;
+  margin-bottom:6px;
+}
+.link-card .lc-title{font-weight:700;color:var(--text);font-size:.96rem;margin-bottom:4px}
+.link-card .lc-desc{font-size:.83rem;color:var(--muted);line-height:1.5;word-break:break-word}
+.link-card .lc-url{font-size:.75rem;color:var(--accent-2);margin-top:9px;word-break:break-all;opacity:.85}
+
+/* опрос */
+.poll{margin-top:14px;display:flex;flex-direction:column;gap:9px}
+.poll-q{font-weight:700;font-size:.95rem;margin-bottom:3px}
+.poll-opt{
+  position:relative;
+  border:1px solid var(--border);
+  border-radius:11px;
+  padding:11px 14px;
+  cursor:pointer;
+  overflow:hidden;
+  background:rgba(11,18,30,.55);
+  transition:.2s;
+  user-select:none;
+}
+.poll-opt:hover{border-color:var(--border-2);background:rgba(19,31,48,.8)}
+.poll-opt .fill{
+  position:absolute;left:0;top:0;bottom:0;
+  background:linear-gradient(90deg, rgba(56,189,248,.22), rgba(14,165,233,.10));
+  border-right:1px solid rgba(56,189,248,.35);
+  transition:width .6s cubic-bezier(.22,1,.36,1);
+  width:0;
+}
+.poll-opt .row{
+  position:relative;
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  font-size:.86rem;
+  font-weight:600;
+}
+.poll-opt .pct{color:var(--accent);font-variant-numeric:tabular-nums}
+.poll-opt.voted{border-color:var(--accent);box-shadow:0 0 0 1px rgba(56,189,248,.35)}
+.poll-opt.voted .row::before{content:'✓ ';color:var(--accent)}
+.poll-foot{font-size:.75rem;color:var(--muted);margin-top:2px}
+
+/* реакции */
+.reactions{
+  display:flex;
+  flex-wrap:wrap;
+  gap:7px;
+  margin-top:16px;
+  padding-top:14px;
+  border-top:1px solid var(--border);
+}
+.react{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:6px 11px;
+  border-radius:999px;
+  border:1px solid var(--border);
+  background:rgba(11,18,30,.6);
+  font-size:.83rem;
+  cursor:pointer;
+  transition:.2s;
+  font-family:inherit;
+  color:var(--text-2);
+  font-weight:600;
+}
+.react:hover{border-color:var(--accent);background:rgba(56,189,248,.1);transform:translateY(-2px)}
+.react.mine{border-color:var(--accent);background:rgba(56,189,248,.16);color:#fff;box-shadow:0 0 0 1px rgba(56,189,248,.3)}
+.react .cnt{font-variant-numeric:tabular-nums;font-size:.78rem}
+
+/* пусто */
+.empty{
+  text-align:center;
+  padding:70px 24px;
+  color:var(--muted);
+  border:1px dashed var(--border-2);
+  border-radius:var(--radius);
+  background:rgba(15,24,38,.35);
+}
+.empty .big{font-size:2.6rem;margin-bottom:12px;opacity:.6}
+.empty h3{color:var(--text-2);font-size:1.05rem;margin-bottom:6px;font-weight:700}
+.empty p{font-size:.85rem}
+
+/* ============ МОДАЛЬНЫЕ ОКНА ============ */
+.overlay{
+  position:fixed;inset:0;
+  background:rgba(3,6,11,.82);
+  backdrop-filter:blur(8px);
+  -webkit-backdrop-filter:blur(8px);
+  z-index:100;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:22px;
+  overflow-y:auto;
+}
+.overlay.open{display:flex;animation:fadeIn .22s ease both}
+
+.modal{
+  width:100%;
+  background:var(--panel-solid);
+  border:1px solid var(--border-2);
+  border-radius:var(--radius);
+  box-shadow:0 30px 90px -20px rgba(0,0,0,.95), 0 0 0 1px rgba(56,189,248,.08);
+  animation:popIn .32s cubic-bezier(.22,1,.36,1) both;
+  position:relative;
+  overflow:hidden;
+}
+.modal::before{
+  content:'';
+  position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,transparent,var(--accent),var(--accent-3),transparent);
+}
+.modal-sm{max-width:430px}
+.modal-lg{max-width:780px;max-height:92vh;display:flex;flex-direction:column}
+
+.modal-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:14px;
+  padding:20px 24px;
+  border-bottom:1px solid var(--border);
+  flex-shrink:0;
+}
+.modal-head h2{
+  font-size:1.08rem;
+  font-weight:800;
+  display:flex;align-items:center;gap:9px;
+  letter-spacing:-.01em;
+}
+.modal-head h2 svg{width:18px;height:18px;color:var(--accent)}
+.modal-close{
+  width:34px;height:34px;
+  border-radius:10px;
+  border:1px solid var(--border);
+  background:rgba(11,18,30,.7);
+  color:var(--muted);
+  font-size:1.15rem;
+  cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:.2s;
+  flex-shrink:0;
+  line-height:1;
+}
+.modal-close:hover{color:#fff;border-color:var(--danger);background:rgba(248,113,113,.15)}
+
+.modal-body{padding:22px 24px;overflow-y:auto}
+.modal-foot{
+  padding:16px 24px;
+  border-top:1px solid var(--border);
+  display:flex;
+  gap:10px;
+  justify-content:flex-end;
+  flex-shrink:0;
+  background:rgba(11,18,30,.4);
+}
+
+/* табы */
+.tabs{
+  display:flex;
+  gap:6px;
+  padding:14px 24px 0;
+  border-bottom:1px solid var(--border);
+  flex-shrink:0;
+  overflow-x:auto;
+}
+.tab{
+  padding:10px 16px;
+  border:none;
+  background:transparent;
+  color:var(--muted);
+  font:inherit;
+  font-size:.84rem;
+  font-weight:700;
+  cursor:pointer;
+  border-bottom:2px solid transparent;
+  transition:.22s;
+  white-space:nowrap;
+  margin-bottom:-1px;
+}
+.tab:hover{color:var(--text-2)}
+.tab.active{color:var(--accent);border-bottom-color:var(--accent)}
+.tab-panel{display:none}
+.tab-panel.active{display:block;animation:fadeIn .25s ease both}
+
+/* формы */
+.field{margin-bottom:16px}
+.field label{
+  display:block;
+  font-size:.76rem;
+  font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:.09em;
+  color:var(--muted);
+  margin-bottom:7px;
+}
+.field input[type=text],
+.field input[type=url],
+.field input[type=password],
+.field textarea,
+.field select{
+  width:100%;
+  padding:12px 14px;
+  border-radius:11px;
+  border:1px solid var(--border);
+  background:rgba(8,13,21,.8);
+  color:var(--text);
+  font:inherit;
+  font-size:.89rem;
+  transition:.2s;
+  outline:none;
+  font-family:inherit;
+}
+.field textarea{resize:vertical;min-height:90px;line-height:1.6}
+.field input:focus,
+.field textarea:focus,
+.field select:focus{
+  border-color:var(--accent);
+  box-shadow:0 0 0 3px rgba(56,189,248,.13);
+  background:rgba(8,13,21,1);
+}
+.field input::placeholder,.field textarea::placeholder{color:#4a5f75}
+.field select{cursor:pointer;appearance:none;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23728aa3' stroke-width='3'><path d='M6 9l6 6 6-6'/></svg>");
+  background-repeat:no-repeat;
+  background-position:right 14px center;
+  padding-right:38px;
+}
+.field select option{background:var(--panel-solid);color:var(--text)}
+
+.row-2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+
+.hint{font-size:.75rem;color:var(--muted);margin-top:6px;line-height:1.5}
+
+/* переключатель */
+.switch-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:14px;
+  padding:13px 15px;
+  border:1px solid var(--border);
+  border-radius:11px;
+  background:rgba(8,13,21,.55);
+  margin-bottom:16px;
+}
+.switch-row .sr-text{font-size:.86rem;font-weight:600}
+.switch-row .sr-sub{font-size:.74rem;color:var(--muted);font-weight:500;margin-top:2px}
+.switch{
+  position:relative;
+  width:46px;height:26px;
+  flex-shrink:0;
+  cursor:pointer;
+}
+.switch input{opacity:0;width:0;height:0;position:absolute}
+.switch .slider{
+  position:absolute;inset:0;
+  background:#1b2a3d;
+  border-radius:99px;
+  transition:.28s;
+  border:1px solid var(--border-2);
+}
+.switch .slider::before{
+  content:'';
+  position:absolute;
+  width:18px;height:18px;
+  left:3px;top:3px;
+  background:#7e94ad;
+  border-radius:50%;
+  transition:.28s cubic-bezier(.22,1,.36,1);
+}
+.switch input:checked + .slider{background:rgba(56,189,248,.28);border-color:var(--accent)}
+.switch input:checked + .slider::before{transform:translateX(20px);background:var(--accent);box-shadow:0 0 12px var(--accent)}
+
+/* кнопки */
+.btn{
+  padding:11px 20px;
+  border-radius:11px;
+  border:1px solid var(--border-2);
+  background:rgba(19,31,48,.85);
+  color:var(--text-2);
+  font:inherit;
+  font-size:.85rem;
+  font-weight:700;
+  cursor:pointer;
+  transition:.22s;
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  justify-content:center;
+}
+.btn:hover{color:#fff;border-color:var(--accent);background:rgba(56,189,248,.12)}
+.btn svg{width:15px;height:15px}
+.btn-primary{
+  background:linear-gradient(120deg,var(--accent-3),var(--accent-2));
+  color:#04121e;
+  border-color:transparent;
+  box-shadow:0 8px 26px -10px rgba(56,189,248,.85);
+}
+.btn-primary:hover{color:#04121e;transform:translateY(-2px);box-shadow:0 14px 34px -10px rgba(56,189,248,1);background:linear-gradient(120deg,var(--accent-3),var(--accent-2))}
+.btn-danger{color:var(--danger);border-color:rgba(248,113,113,.35);background:rgba(248,113,113,.08)}
+.btn-danger:hover{background:rgba(248,113,113,.2);border-color:var(--danger);color:#fff}
+.btn-block{width:100%}
+.btn:disabled{opacity:.5;cursor:not-allowed;transform:none!important}
+
+/* эмодзи-пикер */
+.emoji-bar{
+  display:flex;
+  flex-wrap:wrap;
+  gap:5px;
+  margin-top:9px;
+  padding:9px;
+  border:1px solid var(--border);
+  border-radius:11px;
+  background:rgba(8,13,21,.55);
+  max-height:104px;
+  overflow-y:auto;
+}
+.emoji-bar button{
+  width:33px;height:33px;
+  border:none;
+  background:transparent;
+  border-radius:8px;
+  font-size:1.12rem;
+  cursor:pointer;
+  transition:.15s;
+  line-height:1;
+  display:flex;align-items:center;justify-content:center;
+}
+.emoji-bar button:hover{background:rgba(56,189,248,.18);transform:scale(1.2)}
+
+/* превью аватара в админке */
+.avatar-edit{
+  display:flex;
+  align-items:center;
+  gap:16px;
+  margin-bottom:16px;
+  padding:14px;
+  border:1px solid var(--border);
+  border-radius:var(--radius-sm);
+  background:rgba(8,13,21,.5);
+}
+.avatar-edit img{
+  width:72px;height:72px;
+  border-radius:50%;
+  object-fit:cover;
+  border:2px solid var(--accent);
+  flex-shrink:0;
+  background:var(--panel-2);
+}
+.avatar-edit .ae-info{flex:1;min-width:0}
+.avatar-edit .ae-info .t{font-size:.8rem;color:var(--muted);margin-bottom:8px;font-weight:600}
+
+/* список постов в админке */
+.post-list{display:flex;flex-direction:column;gap:9px;margin-top:8px}
+.pl-item{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:11px 14px;
+  border:1px solid var(--border);
+  border-radius:11px;
+  background:rgba(8,13,21,.5);
+  transition:.2s;
+}
+.pl-item:hover{border-color:var(--border-2);background:rgba(19,31,48,.6)}
+.pl-type{
+  font-size:.63rem;
+  font-weight:800;
+  text-transform:uppercase;
+  letter-spacing:.09em;
+  padding:4px 9px;
+  border-radius:7px;
+  background:rgba(56,189,248,.14);
+  color:var(--accent);
+  flex-shrink:0;
+  border:1px solid rgba(56,189,248,.22);
+}
+.pl-text{
+  flex:1;
+  font-size:.83rem;
+  color:var(--text-2);
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  min-width:0;
+}
+.pl-del{
+  width:29px;height:29px;
+  border-radius:8px;
+  border:1px solid rgba(248,113,113,.3);
+  background:rgba(248,113,113,.1);
+  color:var(--danger);
+  cursor:pointer;
+  flex-shrink:0;
+  font-size:.95rem;
+  line-height:1;
+  transition:.2s;
+  display:flex;align-items:center;justify-content:center;
+}
+.pl-del:hover{background:rgba(248,113,113,.28);color:#fff}
+
+/* тост */
+.toast{
+  position:fixed;
+  bottom:26px;
+  left:50%;
+  transform:translate(-50%,120%);
+  background:var(--panel-solid);
+  border:1px solid var(--accent);
+  color:var(--text);
+  padding:13px 22px;
+  border-radius:12px;
+  font-size:.86rem;
+  font-weight:600;
+  z-index:300;
+  box-shadow:0 20px 50px -12px rgba(0,0,0,.9), 0 0 0 1px rgba(56,189,248,.2);
+  transition:transform .38s cubic-bezier(.22,1,.36,1), opacity .3s;
+  opacity:0;
+  pointer-events:none;
+  max-width:90vw;
+  text-align:center;
+}
+.toast.show{transform:translate(-50%,0);opacity:1}
+.toast.err{border-color:var(--danger)}
+
+/* разделитель секции */
+.section-label{
+  font-size:.72rem;
+  font-weight:800;
+  text-transform:uppercase;
+  letter-spacing:.12em;
+  color:var(--muted);
+  margin:22px 0 12px;
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+.section-label::after{
+  content:'';
+  flex:1;
+  height:1px;
+  background:linear-gradient(90deg,var(--border),transparent);
+}
+.section-label:first-child{margin-top:0}
+
+/* ============ АНИМАЦИИ ============ */
+@keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes popIn{from{opacity:0;transform:scale(.95) translateY(14px)}to{opacity:1;transform:scale(1) translateY(0)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.45;transform:scale(.8)}}
+
+/* ============ АДАПТИВ ============ */
+@media (max-width:980px){
+  .app{grid-template-columns:1fr;padding:16px;gap:18px}
+  .sidebar{position:static;max-height:none;animation:none}
+  .avatar-wrap{width:100px;height:100px}
+  .feed-head{flex-direction:column;align-items:flex-start;gap:12px}
+  .btn-admin{width:100%;justify-content:center}
+  .row-2{grid-template-columns:1fr}
+}
+@media (max-width:520px){
+  .app{padding:11px}
+  .sidebar{padding:20px 16px 16px}
+  .post{padding:18px 16px}
+  .modal-body{padding:18px 16px}
+  .modal-head{padding:16px 18px}
+  .tabs{padding:12px 18px 0}
+  .name{font-size:1.28rem}
+  .toast{left:11px;right:11px;transform:translateY(120%)}
+  .toast.show{transform:translateY(0)}
+}
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- ============ ЛЕВАЯ ПАНЕЛЬ ============ -->
+  <aside class="sidebar">
+    <div class="avatar-wrap">
+      <div class="avatar-ring"></div>
+      <img id="pAvatar" src="" alt="avatar">
+      <span class="online-dot"></span>
+    </div>
+
+    <div class="name-row">
+      <span class="name" id="pName">Frozen</span>
+      <svg class="badge-verified" id="pBadge" viewBox="0 0 24 24" fill="none">
+        <circle cx="12" cy="12" r="11" fill="#38bdf8"/>
+        <path d="M7 12.4l3.2 3.2L17 8.8" stroke="#04121e" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+
+    <div class="country">
+      <span class="flag" id="pFlag">🇷🇺</span>
+      <span id="pCountry">Россия</span>
+    </div>
+
+    <p class="bio" id="pBio">Описание профиля</p>
+
+    <nav class="socials" id="pSocials"></nav>
+
+    <a class="studio" id="pStudio" href="#" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.6 6.5L21 11l-6.4 2.5L12 20l-2.6-6.5L3 11l6.4-2.5z"/></svg>
+      <span id="pStudioName">Frozen Studio</span>
+    </a>
+  </aside>
+
+  <!-- ============ ПРАВАЯ ЧАСТЬ ============ -->
+  <main class="feed">
+    <div class="feed-head">
+      <div>
+        <div class="feed-title"><span class="dot"></span> Лента публикаций</div>
+        <div class="feed-sub" id="feedSub">0 публикаций</div>
+      </div>
+      <button class="btn-admin" id="btnAdmin">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+        </svg>
+        Панель доступа
+      </button>
+    </div>
+
+    <div id="feed"></div>
+  </main>
+</div>
+
+<!-- ============ МОДАЛКА: ВХОД ============ -->
+<div class="overlay" id="loginOverlay">
+  <div class="modal modal-sm">
+    <div class="modal-head">
+      <h2>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+        </svg>
+        Панель доступа
+      </h2>
+      <button class="modal-close" data-close="loginOverlay">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="field">
+        <label>Пароль</label>
+        <input type="password" id="loginPass" placeholder="Введите пароль" autocomplete="current-password">
+        <div class="hint">По умолчанию: <b style="color:var(--accent)">frozen</b> — смените его в настройках панели.</div>
+      </div>
+      <button class="btn btn-primary btn-block" id="btnLogin">Войти</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ МОДАЛКА: АДМИН-ПАНЕЛЬ ============ -->
+<div class="overlay" id="adminOverlay">
+  <div class="modal modal-lg">
+    <div class="modal-head">
+      <h2>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9v0a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+        </svg>
+        Панель управления
+      </h2>
+      <button class="modal-close" data-close="adminOverlay">×</button>
+    </div>
+
+    <div class="tabs">
+      <button class="tab active" data-tab="tabProfile">Профиль</button>
+      <button class="tab" data-tab="tabCreate">Новая публикация</button>
+      <button class="tab" data-tab="tabPosts">Публикации</button>
+      <button class="tab" data-tab="tabSettings">Настройки</button>
+    </div>
+
+    <div class="modal-body">
+
+      <!-- ---- ТАБ: ПРОФИЛЬ ---- -->
+      <div class="tab-panel active" id="tabProfile">
+        <div class="avatar-edit">
+          <img id="admAvatarPreview" src="" alt="">
+          <div class="ae-info">
+            <div class="t">Аватар профиля</div>
+            <input type="file" id="admAvatarFile" accept="image/*" style="display:none">
+            <button class="btn" id="btnUploadAvatar" style="font-size:.78rem;padding:8px 14px">Загрузить файл</button>
+            <button class="btn btn-danger" id="btnResetAvatar" style="font-size:.78rem;padding:8px 14px">Сбросить</button>
+          </div>
+        </div>
+        <div class="field">
+          <label>Ссылка на аватар (URL)</label>
+          <input type="url" id="admAvatarUrl" placeholder="https://...">
+        </div>
+
+        <div class="row-2">
+          <div class="field">
+            <label>Имя</label>
+            <input type="text" id="admName" placeholder="Frozen">
+          </div>
+          <div class="field">
+            <label>Флаг (эмодзи)</label>
+            <input type="text" id="admFlag" placeholder="🇷🇺" maxlength="8">
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Название страны</label>
+          <input type="text" id="admCountry" placeholder="Россия">
+        </div>
+
+        <div class="switch-row">
+          <div>
+            <div class="sr-text">Галочка верификации</div>
+            <div class="sr-sub">Синий значок рядом с именем</div>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="admVerified">
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <div class="field">
+          <label>Описание</label>
+          <textarea id="admBio" placeholder="Расскажите о себе..."></textarea>
+        </div>
+
+        <div class="section-label">Социальные сети</div>
+        <div class="field">
+          <label>Telegram</label>
+          <input type="url" id="admTg" placeholder="https://t.me/username">
+        </div>
+        <div class="field">
+          <label>TikTok</label>
+          <input type="url" id="admTt" placeholder="https://tiktok.com/@username">
+        </div>
+        <div class="field">
+          <label>Instagram</label>
+          <input type="url" id="admIg" placeholder="https://instagram.com/username">
+        </div>
+
+        <div class="section-label">Frozen Studio</div>
+        <div class="row-2">
+          <div class="field">
+            <label>Название</label>
+            <input type="text" id="admStudioName" placeholder="Frozen Studio">
+          </div>
+          <div class="field">
+            <label>Ссылка</label>
+            <input type="url" id="admStudioUrl" placeholder="https://...">
+          </div>
+        </div>
+
+        <button class="btn btn-primary btn-block" id="btnSaveProfile">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+          Сохранить профиль
+        </button>
+      </div>
+
+      <!-- ---- ТАБ: СОЗДАНИЕ ---- -->
+      <div class="tab-panel" id="tabCreate">
+        <div class="field">
+          <label>Тип публикации</label>
+          <select id="npType">
+            <option value="text">📝 Текст</option>
+            <option value="image">🖼 Фото</option>
+            <option value="video">🎬 Видео</option>
+            <option value="link">🔗 Ссылка</option>
+            <option value="poll">📊 Опрос</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label id="npTextLabel">Текст публикации</label>
+          <textarea id="npText" placeholder="Что нового?"></textarea>
+          <div class="emoji-bar" id="emojiBar"></div>
+        </div>
+
+        <!-- Фото -->
+        <div class="np-block" id="blkImage" style="display:none">
+          <div class="field">
+            <label>URL изображения</label>
+            <input type="url" id="npImgUrl" placeholder="https://example.com/photo.jpg">
+          </div>
+          <div class="field">
+            <label>Или загрузить файл</label>
+            <input type="file" id="npImgFile" accept="image/*">
+          </div>
+        </div>
+
+        <!-- Видео -->
+        <div class="np-block" id="blkVideo" style="display:none">
+          <div class="field">
+            <label>Ссылка на видео</label>
+            <input type="url" id="npVidUrl" placeholder="YouTube, Vimeo или прямая ссылка .mp4">
+            <div class="hint">Поддерживается YouTube, Vimeo и прямые ссылки на видеофайлы.</div>
+          </div>
+        </div>
+
+        <!-- Ссылка -->
+        <div class="np-block" id="blkLink" style="display:none">
+          <div class="field">
+            <label>URL</label>
+            <input type="url" id="npLinkUrl" placeholder="https://...">
+          </div>
+          <div class="field">
+            <label>Заголовок</label>
+            <input type="text" id="npLinkTitle" placeholder="Название ссылки">
+          </div>
+          <div class="field">
+            <label>Описание</label>
+            <input type="text" id="npLinkDesc" placeholder="Краткое описание">
+          </div>
+        </div>
+
+        <!-- Опрос -->
+        <div class="np-block" id="blkPoll" style="display:none">
+          <div class="field">
+            <label>Вопрос</label>
+            <input type="text" id="npPollQ" placeholder="Ваш вопрос?">
+          </div>
+          <div class="field">
+            <label>Варианты ответа</label>
+            <textarea id="npPollOpts" placeholder="Вариант 1&#10;Вариант 2&#10;Вариант 3"></textarea>
+            <div class="hint">Каждый вариант — с новой строки. От 2 до 10 вариантов.</div>
+          </div>
+        </div>
+
+        <button class="btn btn-primary btn-block" id="btnPublish">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+          Опубликовать
+        </button>
+      </div>
+
+      <!-- ---- ТАБ: ПУБЛИКАЦИИ ---- -->
+      <div class="tab-panel" id="tabPosts">
+        <div class="hint" style="margin-bottom:14px">Удаление публикаций. Порядок: сначала новые.</div>
+        <div class="post-list" id="adminPostList"></div>
+      </div>
+
+      <!-- ---- ТАБ: НАСТРОЙКИ ---- -->
+      <div class="tab-panel" id="tabSettings">
+        <div class="section-label">Смена пароля</div>
+        <div class="field">
+          <label>Новый пароль</label>
+          <input type="password" id="setNewPass" placeholder="Минимум 4 символа">
+        </div>
+        <div class="field">
+          <label>Повторите пароль</label>
+          <input type="password" id="setNewPass2" placeholder="Ещё раз">
+        </div>
+        <button class="btn btn-primary btn-block" id="btnChangePass">Сменить пароль</button>
+
+        <div class="section-label">Данные</div>
+        <button class="btn btn-block" id="btnExport" style="margin-bottom:9px">⬇ Экспорт данных (JSON)</button>
+        <input type="file" id="importFile" accept=".json" style="display:none">
+        <button class="btn btn-block" id="btnImport" style="margin-bottom:9px">⬆ Импорт данных (JSON)</button>
+        <button class="btn btn-danger btn-block" id="btnResetAll">🗑 Сбросить всё к настройкам по умолчанию</button>
+
+        <div class="section-label">Сессия</div>
+        <button class="btn btn-block" id="btnLogout">Выйти из панели</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* =========================================================
+   FROZEN — логика приложения
+   ========================================================= */
+
+const LS_DATA = 'frozen_site_data_v1';
+const LS_PASS = 'frozen_site_pass_v1';
+const SS_AUTH = 'frozen_site_auth_v1';
+
+const DEFAULT_AVATAR = "data:image/svg+xml;utf8," + encodeURIComponent(
+`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 220">
+<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+<stop offset="0" stop-color="#38bdf8"/><stop offset="1" stop-color="#0e7490"/></linearGradient></defs>
+<rect width="220" height="220" fill="url(#g)"/>
+<text x="110" y="148" font-family="Arial,Helvetica,sans-serif" font-size="112" font-weight="bold" fill="#04121e" text-anchor="middle">F</text>
+</svg>`);
+
+const SOCIAL_ICONS = {
+  tg: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71L12.6 16.3l-1.99 1.93c-.23.23-.42.42-.83.42z"/></svg>`,
+  tt: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12.53.02C13.84 0 15.14.01 16.44 0c.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/></svg>`,
+  ig: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.16c3.2 0 3.58.01 4.85.07 1.17.05 1.8.25 2.23.41.56.22.96.48 1.38.9.42.42.68.82.9 1.38.16.42.36 1.06.41 2.23.06 1.27.07 1.65.07 4.85s-.01 3.58-.07 4.85c-.05 1.17-.25 1.8-.41 2.23-.22.56-.48.96-.9 1.38-.42.42-.82.68-1.38.9-.42.16-1.06.36-2.23.41-1.27.06-1.65.07-4.85.07s-3.58-.01-4.85-.07c-1.17-.05-1.8-.25-2.23-.41-.56-.22-.96-.48-1.38-.9-.42-.42-.68-.82-.9-1.38-.16-.42-.36-1.06-.41-2.23C2.17 15.58 2.16 15.2 2.16 12s.01-3.58.07-4.85c.05-1.17.25-1.8.41-2.23.22-.56.48-.96.9-1.38.42-.42.82-.68 1.38-.9.42-.16 1.06-.36 2.23-.41C8.42 2.17 8.8 2.16 12 2.16M12 0C8.74 0 8.33.01 7.05.07 5.78.13 4.9.33 4.14.63c-.79.3-1.46.72-2.13 1.38C1.35 2.68.93 3.35.63 4.14.33 4.9.13 5.78.07 7.05.01 8.33 0 8.74 0 12s.01 3.67.07 4.95c.06 1.27.26 2.15.56 2.91.3.79.72 1.46 1.38 2.13.67.66 1.34 1.08 2.13 1.38.76.3 1.64.5 2.91.56C8.33 23.99 8.74 24 12 24s3.67-.01 4.95-.07c1.27-.06 2.15-.26 2.91-.56.79-.3 1.46-.72 2.13-1.38.66-.67 1.08-1.34 1.38-2.13.3-.76.5-1.64.56-2.91.06-1.28.07-1.69.07-4.95s-.01-3.67-.07-4.95c-.06-1.27-.26-2.15-.56-2.91-.3-.79-.72-1.46-1.38-2.13C21.32 1.35 20.65.93 19.86.63c-.76-.3-1.64-.5-2.91-.56C15.67.01 15.26 0 12 0zm0 5.84a6.16 6.16 0 100 12.32 6.16 6.16 0 000-12.32zM12 16a4 4 0 110-8 4 4 0 010 8zm7.85-10.4a1.44 1.44 0 11-2.88 0 1.44 1.44 0 012.88 0z"/></svg>`
+};
+
+const VERIFIED_BADGE = `<svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="11" fill="#38bdf8"/><path d="M7 12.4l3.2 3.2L17 8.8" stroke="#04121e" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+
+const EMOJIS = ['😀','😂','🥰','😎','🤔','😴','🔥','💙','✨','⚡','❄️','🎮','🎧','🎬','📸','💻','🚀','🌊','🏆','💎','👑','🖤','👍','🙏','💯','🎯','🌟','🍕','☕','🌙'];
+
+const now = Date.now();
+const DEFAULT_DATA = {
+  profile: {
+    avatar: DEFAULT_AVATAR,
+    name: 'Frozen',
+    verified: true,
+    flag: '🇷🇺',
+    country: 'Россия',
+    bio: 'Добро пожаловать на мой профиль ❄️\nКонтент, видео и проекты Frozen Studio.',
+    socials: {
+      tg: 'https://t.me/',
+      tt: 'https://tiktok.com/',
+      ig: 'https://instagram.com/'
+    },
+    studioName: 'Frozen Studio',
+    studioUrl: 'https://t.me/'
+  },
+  posts: [
+    {
+      id: 'p1', type: 'text', ts: now - 1000*60*18,
+      text: 'Привет! Это мой первый пост на новом сайте ❄️💙\nЗдесь будут выходить видео, фото и опросы.',
+      reactions: { '🔥': 12, '💙': 24, '👍': 7 }
+    },
+    {
+      id: 'p2', type: 'poll', ts: now - 1000*60*60*3,
+      text: 'Что смотреть следующим?',
+      question: 'Какой контент вы хотите чаще?',
+      options: [
+        { text: 'Видео-ролики', votes: 34 },
+        { text: 'Фото-подборки', votes: 21 },
+        { text: 'Тексты и статьи', votes: 9 },
+        { text: 'Опросы и интерактив', votes: 17 }
+      ],
+      reactions: { '🔥': 5 }
+    },
+    {
+      id: 'p3', type: 'link', ts: now - 1000*60*60*26,
+      text: 'Свежий проект от нашей студии 👇',
+      url: 'https://t.me/',
+      title: 'Frozen Studio — официальный канал',
+      desc: 'Все проекты, анонсы и закулисье в одном месте.',
+      reactions: { '🚀': 8, '💙': 4 }
+    }
+  ]
+};
+
+/* ================= СОСТОЯНИЕ ================= */
+let state = loadData();
+let myReactions = JSON.parse(localStorage.getItem('frozen_my_react') || '{}');
+let myVotes = JSON.parse(localStorage.getItem('frozen_my_votes') || '{}');
+
+function loadData(){
+  try{
+    const raw = localStorage.getItem(LS_DATA);
+    if(!raw) return structuredClone(DEFAULT_DATA);
+    const d = JSON.parse(raw);
+    // мягкое слияние
+    d.profile = Object.assign(structuredClone(DEFAULT_DATA.profile), d.profile || {});
+    d.profile.socials = Object.assign(structuredClone(DEFAULT_DATA.profile.socials), (d.profile.socials||{}));
+    d.posts = Array.isArray(d.posts) ? d.posts : [];
+    return d;
+  }catch(e){
+    console.warn('Ошибка загрузки данных, используются значения по умолчанию', e);
+    return structuredClone(DEFAULT_DATA);
+  }
+}
+function saveData(){
+  try{
+    localStorage.setItem(LS_DATA, JSON.stringify(state));
+  }catch(e){
+    toast('Хранилище переполнено. Уменьшите размер изображений.', true);
+    console.error(e);
+  }
+}
+
+/* ================= УТИЛИТЫ ================= */
+function esc(s){
+  return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function escAttr(s){ return esc(s); }
+
+function linkify(escaped){
+  return escaped.replace(
+    /(https?:\/\/[^\s<]+)/g,
+    url => `<a href="${url}" target="_blank" rel="noopener noreferrer">${url}</a>`
+  );
+}
+function renderText(t){
+  return linkify(esc(t)).replace(/\n/g, '<br>');
+}
+
+function timeAgo(ts){
+  const diff = Math.floor((Date.now() - ts) / 1000);
+  if(diff < 60) return 'только что';
+  if(diff < 3600) return Math.floor(diff/60) + ' мин назад';
+  if(diff < 86400) return Math.floor(diff/3600) + ' ч назад';
+  if(diff < 604800) return Math.floor(diff/86400) + ' дн назад';
+  return new Date(ts).toLocaleDateString('ru-RU', {day:'numeric', month:'long', year:'numeric'});
+}
+
+function uid(){ return 'p' + Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
+
+let toastTimer;
+function toast(msg, isErr){
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.toggle('err', !!isErr);
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 2600);
+}
+
+/* ================= РЕНДЕР ПРОФИЛЯ ================= */
+function renderProfile(){
+  const p = state.profile;
+
+  const av = document.getElementById('pAvatar');
+  av.src = p.avatar || DEFAULT_AVATAR;
+  av.onerror = () => { av.onerror = null; av.src = DEFAULT_AVATAR; };
+
+  document.getElementById('pName').textContent = p.name || 'Без имени';
+  document.getElementById('pBadge').classList.toggle('hidden', !p.verified);
+  document.getElementById('pFlag').textContent = p.flag || '🏳️';
+  document.getElementById('pCountry').textContent = p.country || '—';
+  document.getElementById('pBio').textContent = p.bio || '';
+
+  // соцсети
+  const box = document.getElementById('pSocials');
+  box.innerHTML = '';
+  const items = [
+    { k:'tg', label:'Telegram',  cls:'tg' },
+    { k:'tt', label:'TikTok',    cls:'tt' },
+    { k:'ig', label:'Instagram', cls:'ig' }
+  ];
+  items.forEach(it => {
+    const url = (p.socials && p.socials[it.k]) ? p.socials[it.k].trim() : '';
+    if(!url) return;
+    const a = document.createElement('a');
+    a.className = 'social ' + it.cls;
+    a.href = url;
+    a.target = '_blank';
+    a.rel = 'noopener noreferrer';
+    a.innerHTML = `${SOCIAL_ICONS[it.k]}<span>${esc(it.label)}</span><span class="arrow">→</span>`;
+    box.appendChild(a);
+  });
+
+  // Frozen Studio
+  const st = document.getElementById('pStudio');
+  st.href = p.studioUrl || '#';
+  document.getElementById('pStudioName').textContent = p.studioName || 'Frozen Studio';
+  if(!p.studioUrl) st.removeAttribute('target');
+}
+
+/* ================= РЕНДЕР ЛЕНТЫ ================= */
+function renderFeed(){
+  const feed = document.getElementById('feed');
+  const posts = [...state.posts].sort((a,b) => b.ts - a.ts);
+
+  document.getElementById('feedSub').textContent =
+    posts.length + ' ' + plural(posts.length, ['публикация','публикации','публикаций']);
+
+  if(!posts.length){
+    feed.innerHTML = `<div class="empty">
+      <div class="big">❄️</div>
+      <h3>Пока нет публикаций</h3>
+      <p>Откройте панель доступа и создайте первую запись</p>
+    </div>`;
+    return;
+  }
+
+  feed.innerHTML = posts.map(renderPost).join('');
+}
+
+function plural(n, forms){
+  const a = Math.abs(n) % 100, b = n % 10;
+  if(a > 10 && a < 20) return forms[2];
+  if(b > 1 && b < 5) return forms[1];
+  if(b === 1) return forms[0];
+  return forms[2];
+}
+
+function renderPost(post){
+  const p = state.profile;
+  let body = '';
+
+  /* --- текст --- */
+  if(post.text && post.text.trim()){
+    if(post.type === 'poll' || post.type === 'link'){
+      body += `<div class="post-text" style="margin-bottom:12px">${renderText(post.text)}</div>`;
+    } else {
+      body += `<div class="post-text">${renderText(post.text)}</div>`;
+    }
+  }
+
+  /* --- фото --- */
+  if(post.type === 'image' && post.url){
+    body += `<div class="post-media"><img src="${escAttr(post.url)}" alt="" loading="lazy"
+      onerror="this.parentElement.innerHTML='<div style=\\'padding:26px;text-align:center;color:#728aa3;font-size:.84rem\\'>⚠ Не удалось загрузить изображение</div>'"></div>`;
+  }
+
+  /* --- видео --- */
+  if(post.type === 'video' && post.url){
+    body += `<div class="post-media">${videoEmbed(post.url)}</div>`;
+  }
+
+  /* --- ссылка --- */
+  if(post.type === 'link' && post.url){
+    body += `<a class="link-card" href="${escAttr(post.url)}" target="_blank" rel="noopener noreferrer">
+      <div class="lc-label">Ссылка</div>
+      <div class="lc-title">${esc(post.title || post.url)}</div>
+      ${post.desc ? `<div class="lc-desc">${esc(post.desc)}</div>` : ''}
+      <div class="lc-url">${esc(post.url)}</div>
+    </a>`;
+  }
+
+  /* --- опрос --- */
+  if(post.type === 'poll' && Array.isArray(post.options)){
+    const total = post.options.reduce((s,o) => s + (o.votes||0), 0);
+    const votedIdx = myVotes[post.id];
+    body += `<div class="poll">
+      <div class="poll-q">${esc(post.question || 'Опрос')}</div>
+      ${post.options.map((o,i) => {
+        const pct = total ? Math.round((o.votes||0) / total * 100) : 0;
+        const voted = votedIdx === i ? ' voted' : '';
+        return `<div class="poll-opt${voted}" data-poll="${escAttr(post.id)}" data-idx="${i}">
+          <div class="fill" style="width:${pct}%"></div>
+          <div class="row"><span>${esc(o.text)}</span><span class="pct">${pct}%</span></div>
+        </div>`;
+      }).join('')}
+      <div class="poll-foot">${total} ${plural(total,['голос','голоса','голосов'])}${votedIdx !== undefined ? ' · вы проголосовали' : ''}</div>
+    </div>`;
+  }
+
+  /* --- реакции --- */
+  const reactions = post.reactions || {};
+  const myR = myReactions[post.id] || [];
+  const reactKeys = ['🔥','💙','👍','😂','🚀','❄️'];
+  const reactHtml = reactKeys.map(k => {
+    const c = reactions[k] || 0;
+    const mine = myR.includes(k) ? ' mine' : '';
+    return `<button class="react${mine}" data-react="${escAttr(post.id)}" data-emoji="${k}">
+      <span>${k}</span>${c ? `<span class="cnt">${c}</span>` : ''}
+    </button>`;
+  }).join('');
+
+  return `<article class="post" data-id="${escAttr(post.id)}">
+    <div class="post-head">
+      <img class="post-avatar" src="${escAttr(p.avatar || DEFAULT_AVATAR)}" alt=""
+        onerror="this.onerror=null;this.src='${escAttr(DEFAULT_AVATAR)}'">
+      <div class="post-meta">
+        <div class="post-name">${esc(p.name)}${p.verified ? VERIFIED_BADGE : ''}</div>
+        <div class="post-time">${timeAgo(post.ts)}${p.flag ? ' · ' + esc(p.flag) : ''}</div>
+      </div>
+      <button class="post-del" data-del="${escAttr(post.id)}" title="Удалить">×</button>
+    </div>
+    ${body}
+    <div class="reactions">${reactHtml}</div>
+  </article>`;
+}
+
+function videoEmbed(url){
+  const u = String(url).trim();
+  const yt = u.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/|live\/)|youtu\.be\/)([\w-]{11})/);
+  if(yt) return `<iframe src="https://www.youtube.com/embed/${yt[1]}" allowfullscreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"></iframe>`;
+  const vm = u.match(/vimeo\.com\/(?:video\/)?(\d+)/);
+  if(vm) return `<iframe src="https://player.vimeo.com/video/${vm[1]}" allowfullscreen></iframe>`;
+  return `<video controls preload="metadata" src="${escAttr(u)}"></video>`;
+}
+
+/* ================= СОБЫТИЯ ЛЕНТЫ ================= */
+document.getElementById('feed').addEventListener('click', e => {
+  /* реакции */
+  const rb = e.target.closest('[data-react]');
+  if(rb){
+    const id = rb.dataset.react, emoji = rb.dataset.emoji;
+    const post = state.posts.find(p => p.id === id);
+    if(!post) return;
+    post.reactions = post.reactions || {};
+    const mine = myReactions[id] || (myReactions[id] = []);
+    if(mine.includes(emoji)){
+      mine.splice(mine.indexOf(emoji), 1);
+      post.reactions[emoji] = Math.max(0, (post.reactions[emoji]||0) - 1);
+      if(!post.reactions[emoji]) delete post.reactions[emoji];
+    } else {
+      mine.push(emoji);
+      post.reactions[emoji] = (post.reactions[emoji]||0) + 1;
+    }
+    if(!mine.length) delete myReactions[id];
+    localStorage.setItem('frozen_my_react', JSON.stringify(myReactions));
+    saveData();
+    renderFeed();
+    return;
+  }
+
+  /* голосование */
+  const ob = e.target.closest('[data-poll]');
+  if(ob){
+    const id = ob.dataset.poll;
+    const idx = parseInt(ob.dataset.idx, 10);
+    const post = state.posts.find(p => p.id === id);
+    if(!post || !post.options) return;
+    if(myVotes[id] !== undefined){
+      toast('Вы уже голосовали в этом опросе');
+      return;
+    }
+    post.options[idx].votes = (post.options[idx].votes || 0) + 1;
+    myVotes[id] = idx;
+    localStorage.setItem('frozen_my_votes', JSON.stringify(myVotes));
+    saveData();
+    renderFeed();
+    return;
+  }
+
+  /* удаление */
+  const db = e.target.closest('[data-del]');
+  if(db && document.body.classList.contains('admin')){
+    const id = db.dataset.del;
+    if(!confirm('Удалить эту публикацию?')) return;
+    state.posts = state.posts.filter(p => p.id !== id);
+    saveData();
+    renderFeed();
+    renderAdminPostList();
+    toast('Публикация удалена');
+  }
+});
+
+/* ================= МОДАЛКИ ================= */
+function openModal(id){ document.getElementById(id).classList.add('open'); document.body.style.overflow='hidden'; }
+function closeModal(id){
+  document.getElementById(id).classList.remove('open');
+  if(!document.querySelector('.overlay.open')) document.body.style.overflow='';
+}
+document.querySelectorAll('[data-close]').forEach(b => {
+  b.addEventListener('click', () => closeModal(b.dataset.close));
+});
+document.querySelectorAll('.overlay').forEach(o => {
+  o.addEventListener('mousedown', e => { if(e.target === o) closeModal(o.id); });
+});
+document.addEventListener('keydown', e => {
+  if(e.key === 'Escape') document.querySelectorAll('.overlay.open').forEach(o => closeModal(o.id));
+});
+
+/* ================= АВТОРИЗАЦИЯ ================= */
+function getPass(){ return localStorage.getItem(LS_PASS) || 'frozen'; }
+function isAuthed(){ return sessionStorage.getItem(SS_AUTH) === '1'; }
+
+function enterAdmin(){
+  sessionStorage.setItem(SS_AUTH, '1');
+  document.body.classList.add('admin');
+  document.getElementById('btnAdmin').classList.add('active');
+  document.getElementById('btnAdmin').innerHTML =
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg> Режим редактирования';
+  closeModal('loginOverlay');
+  fillAdminForms();
+  renderAdminPostList();
+  openModal('adminOverlay');
+  toast('Панель разблокирована');
+  renderFeed();
+}
+
+function exitAdmin(){
+  sessionStorage.removeItem(SS_AUTH);
+  document.body.classList.remove('admin');
+  const b = document.getElementById('btnAdmin');
+  b.classList.remove('active');
+  b.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> Панель доступа';
+  renderFeed();
+}
+
+document.getElementById('btnAdmin').addEventListener('click', () => {
+  if(isAuthed()) openModal('adminOverlay');
+  else {
+    document.getElementById('loginPass').value = '';
+    openModal('loginOverlay');
+    setTimeout(() => document.getElementById('loginPass').focus(), 120);
+  }
+});
+
+document.getElementById('btnLogin').addEventListener('click', doLogin);
+document.getElementById('loginPass').addEventListener('keydown', e => { if(e.key === 'Enter') doLogin(); });
+
+function doLogin(){
+  const v = document.getElementById('loginPass').value;
+  if(v === getPass()){
+    enterAdmin();
+  } else {
+    toast('Неверный пароль', true);
+    const inp = document.getElementById('loginPass');
+    inp.style.borderColor = 'var(--danger)';
+    inp.animate([{transform:'translateX(0)'},{transform:'translateX(-7px)'},{transform:'translateX(7px)'},{transform:'translateX(0)'}], {duration:280});
+    setTimeout(() => inp.style.borderColor = '', 900);
+  }
+}
+
+/* ================= ТАБЫ ================= */
+document.querySelectorAll('.tab').forEach(t => {
+  t.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(x => x.classList.remove('active'));
+    t.classList.add('active');
+    document.getElementById(t.dataset.tab).classList.add('active');
+  });
+});
+
+/* ================= ЗАПОЛНЕНИЕ ФОРМ ================= */
+function fillAdminForms(){
+  const p = state.profile;
+  document.getElementById('admAvatarPreview').src = p.avatar || DEFAULT_AVATAR;
+  document.getElementById('admAvatarUrl').value = (p.avatar && p.avatar.startsWith('data:')) ? '' : (p.avatar || '');
+  document.getElementById('admName').value = p.name || '';
+  document.getElementById('admFlag').value = p.flag || '';
+  document.getElementById('admCountry').value = p.country || '';
+  document.getElementById('admVerified').checked = !!p.verified;
+  document.getElementById('admBio').value = p.bio || '';
+  document.getElementById('admTg').value = (p.socials && p.socials.tg) || '';
+  document.getElementById('admTt').value = (p.socials && p.socials.tt) || '';
+  document.getElementById('admIg').value = (p.socials && p.socials.ig) || '';
+  document.getElementById('admStudioName').value = p.studioName || '';
+  document.getElementById('admStudioUrl').value = p.studioUrl || '';
+}
+
+/* ================= СОХРАНЕНИЕ ПРОФИЛЯ ================= */
+document.getElementById('btnSaveProfile').addEventListener('click', () => {
+  const p = state.profile;
+  const urlVal = document.getElementById('admAvatarUrl').value.trim();
+
+  if(urlVal) p.avatar = urlVal;
+  p.name = document.getElementById('admName').value.trim() || 'Frozen';
+  p.flag = document.getElementById('admFlag').value.trim() || '🏳️';
+  p.country = document.getElementById('admCountry').value.trim() || '—';
+  p.verified = document.getElementById('admVerified').checked;
+  p.bio = document.getElementById('admBio').value;
+  p.socials = {
+    tg: document.getElementById('admTg').value.trim(),
+    tt: document.getElementById('admTt').value.trim(),
+    ig: document.getElementById('admIg').value.trim()
+  };
+  p.studioName = document.getElementById('admStudioName').value.trim() || 'Frozen Studio';
+  p.studioUrl = document.getElementById('admStudioUrl').value.trim();
+
+  saveData();
+  renderProfile();
+  renderFeed();
+  toast('Профиль сохранён ✓');
+});
+
+/* аватар — файл */
+document.getElementById('btnUploadAvatar').addEventListener('click', () => {
+  document.getElementById('admAvatarFile').click();
+});
+document.getElementById('admAvatarFile').addEventListener('change', e => {
+  const f = e.target.files[0];
+  if(!f) return;
+  if(f.size > 2.2 * 1024 * 1024){
+    toast('Файл слишком большой (макс. ~2 МБ)', true);
+    return;
+  }
+  const r = new FileReader();
+  r.onload = ev => {
+    state.profile.avatar = ev.target.result;
+    document.getElementById('admAvatarPreview').src = ev.target.result;
+    document.getElementById('admAvatarUrl').value = '';
+    saveData();
+    renderProfile();
+    renderFeed();
+    toast('Аватар обновлён ✓');
+  };
+  r.readAsDataURL(f);
+  e.target.value = '';
+});
+
+document.getElementById('btnResetAvatar').addEventListener('click', () => {
+  state.profile.avatar = DEFAULT_AVATAR;
+  document.getElementById('admAvatarPreview').src = DEFAULT_AVATAR;
+  document.getElementById('admAvatarUrl').value = '';
+  saveData();
+  renderProfile();
+  renderFeed();
+  toast('Аватар сброшен');
+});
+
+/* ================= ЭМОДЗИ-ПИКЕР ================= */
+(function buildEmoji(){
+  const bar = document.getElementById('emojiBar');
+  EMOJIS.forEach(e => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.textContent = e;
+    b.addEventListener('click', () => {
+      const ta = document.getElementById('npText');
+      const s = ta.selectionStart, en = ta.selectionEnd;
+      ta.value = ta.value.slice(0, s) + e + ta.value.slice(en);
+      ta.selectionStart = ta.selectionEnd = s + e.length;
+      ta.focus();
+    });
+    bar.appendChild(b);
+  });
+})();
+
+/* ================= ТИП ПУБЛИКАЦИИ ================= */
+document.getElementById('npType').addEventListener('change', e => {
+  const t = e.target.value;
+  document.getElementById('blkImage').style.display  = t === 'image' ? '' : 'none';
+  document.getElementById('blkVideo').style.display  = t === 'video' ? '' : 'none';
+  document.getElementById('blkLink').style.display   = t === 'link'  ? '' : 'none';
+  document.getElementById('blkPoll').style.display   = t === 'poll'  ? '' : 'none';
+
+  const lbl = document.getElementById('npTextLabel');
+  const ta = document.getElementById('npText');
+  if(t === 'poll'){ lbl.textContent = 'Описание (необязательно)'; ta.placeholder = 'Добавьте комментарий к опросу...'; }
+  else if(t === 'image'){ lbl.textContent = 'Подпись к фото (необязательно)'; ta.placeholder = 'Подпись...'; }
+  else if(t === 'video'){ lbl.textContent = 'Подпись к видео (необязательно)'; ta.placeholder = 'Подпись...'; }
+  else if(t === 'link'){ lbl.textContent = 'Комментарий (необязательно)'; ta.placeholder = 'Комментарий к ссылке...'; }
+  else { lbl.textContent = 'Текст публикации'; ta.placeholder = 'Что нового?'; }
+});
+
+/* ================= ПУБЛИКАЦИЯ ================= */
+document.getElementById('btnPublish').addEventListener('click', () => {
+  const type = document.getElementById('npType').value;
+  const text = document.getElementById('npText').value.trim();
+  const post = { id: uid(), type, ts: Date.now(), text, reactions: {} };
+
+  if(type === 'text'){
+    if(!text) return toast('Введите текст публикации', true);
+  }
+  else if(type === 'image'){
+    const file = document.getElementById('npImgFile').files[0];
+    const url = document.getElementById('npImgUrl').value.trim();
+    if(file){
+      if(file.size > 2.2 * 1024 * 1024) return toast('Файл слишком большой (макс. ~2 МБ)', true);
+      const r = new FileReader();
+      r.onload = ev => { post.url = ev.target.result; finishPublish(post); };
+      r.readAsDataURL(file);
+      return;
+    }
+    if(!url) return toast('Укажите URL изображения или загрузите файл', true);
+    post.url = url;
+  }
+  else if(type === 'video'){
+    const url = document.getElementById('npVidUrl').value.trim();
+    if(!url) return toast('Укажите ссылку на видео', true);
+    post.url = url;
+  }
+  else if(type === 'link'){
+    const url = document.getElementById('npLinkUrl').value.trim();
+    if(!url) return toast('Укажите URL ссылки', true);
+    post.url = url;
+    post.title = document.getElementById('npLinkTitle').value.trim();
+    post.desc = document.getElementById('npLinkDesc').value.trim();
+  }
+  else if(type === 'poll'){
+    const q = document.getElementById('npPollQ').value.trim();
+    const opts = document.getElementById('npPollOpts').value
+      .split('\n').map(s => s.trim()).filter(Boolean);
+    if(!q) return toast('Введите вопрос опроса', true);
+    if(opts.length < 2) return toast('Нужно минимум 2 варианта ответа', true);
+    if(opts.length > 10) return toast('Максимум 10 вариантов', true);
+    post.question = q;
+    post.options = opts.map(t => ({ text: t, votes: 0 }));
+  }
+
+  finishPublish(post);
+});
+
+function finishPublish(post){
+  state.posts.unshift(post);
+  saveData();
+  renderFeed();
+  renderAdminPostList();
+  resetComposer();
+  toast('Публикация создана ✓');
+  // переключимся на вкладку публикаций
+  document.querySelector('.tab[data-tab="tabPosts"]').click();
+}
+
+function resetComposer(){
+  document.getElementById('npText').value = '';
+  document.getElementById('npImgUrl').value = '';
+  document.getElementById('npImgFile').value = '';
+  document.getElementById('npVidUrl').value = '';
+  document.getElementById('npLinkUrl').value = '';
+  document.getElementById('npLinkTitle').value = '';
+  document.getElementById('npLinkDesc').value = '';
+  document.getElementById('npPollQ').value = '';
+  document.getElementById('npPollOpts').value = '';
+}
+
+/* ================= СПИСОК ПОСТОВ В АДМИНКЕ ================= */
+const TYPE_LABEL = { text:'Текст', image:'Фото', video:'Видео', link:'Ссылка', poll:'Опрос' };
+
+function renderAdminPostList(){
+  const box = document.getElementById('adminPostList');
+  const posts = [...state.posts].sort((a,b) => b.ts - a.ts);
+  if(!posts.length){
+    box.innerHTML = '<div class="hint">Публикаций пока нет.</div>';
+    return;
+  }
+  box.innerHTML = posts.map(p => {
+    let preview = p.text || p.question || p.title || p.url || '—';
+    preview = preview.replace(/\s+/g,' ').slice(0, 70);
+    return `<div class="pl-item">
+      <span class="pl-type">${TYPE_LABEL[p.type] || p.type}</span>
+      <span class="pl-text">${esc(preview)}</span>
+      <button class="pl-del" data-pl-del="${escAttr(p.id)}" title="Удалить">×</button>
+    </div>`;
+  }).join('');
+}
+
+document.getElementById('adminPostList').addEventListener('click', e => {
+  const b = e.target.closest('[data-pl-del]');
+  if(!b) return;
+  const id = b.dataset.plDel;
+  if(!confirm('Удалить эту публикацию?')) return;
+  state.posts = state.posts.filter(p => p.id !== id);
+  saveData();
+  renderFeed();
+  renderAdminPostList();
+  toast('Публикация удалена');
+});
+
+/* ================= НАСТРОЙКИ ================= */
+document.getElementById('btnChangePass').addEventListener('click', () => {
+  const a = document.getElementById('setNewPass').value;
+  const b = document.getElementById('setNewPass2').value;
+  if(a.length < 4) return toast('Пароль должен быть минимум 4 символа', true);
+  if(a !== b) return toast('Пароли не совпадают', true);
+  localStorage.setItem(LS_PASS, a);
+  document.getElementById('setNewPass').value = '';
+  document.getElementById('setNewPass2').value = '';
+  toast('Пароль изменён ✓');
+});
+
+document.getElementById('btnExport').addEventListener('click', () => {
+  const blob = new Blob([JSON.stringify(state, null, 2)], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'frozen-data-' + new Date().toISOString().slice(0,10) + '.json';
+  a.click();
+  URL.revokeObjectURL(a.href);
+  toast('Файл экспортирован');
+});
+
+document.getElementById('btnImport').addEventListener('click', () => {
+  document.getElementById('importFile').click();
+});
+document.getElementById('importFile').addEventListener('change', e => {
+  const f = e.target.files[0];
+  if(!f) return;
+  const r = new FileReader();
+  r.onload = ev => {
+    try{
+      const d = JSON.parse(ev.target.result);
+      if(!d.profile || !Array.isArray(d.posts)) throw new Error('Неверный формат');
+      state = d;
+      state.profile = Object.assign(structuredClone(DEFAULT_DATA.profile), state.profile);
+      state.profile.socials = Object.assign(structuredClone(DEFAULT_DATA.profile.socials), state.profile.socials || {});
+      saveData();
+      renderProfile();
+      renderFeed();
+      fillAdminForms();
+      renderAdminPostList();
+      toast('Данные импортированы ✓');
+    }catch(err){
+      toast('Ошибка импорта: неверный файл', true);
+    }
+  };
+  r.readAsText(f);
+  e.target.value = '';
+});
+
+document.getElementById('btnResetAll').addEventListener('click', () => {
+  if(!confirm('Сбросить ВСЕ данные (профиль и публикации) к значениям по умолчанию?')) return;
+  state = structuredClone(DEFAULT_DATA);
+  myReactions = {}; myVotes = {};
+  localStorage.removeItem('frozen_my_react');
+  localStorage.removeItem('frozen_my_votes');
+  saveData();
+  renderProfile();
+  renderFeed();
+  fillAdminForms();
+  renderAdminPostList();
+  toast('Всё сброшено');
+});
+
+document.getElementById('btnLogout').addEventListener('click', () => {
+  exitAdmin();
+  closeModal('adminOverlay');
+  toast('Вы вышли из панели');
+});
+
+/* ================= СТАРТ ================= */
+(function init(){
+  renderProfile();
+  renderFeed();
+  if(isAuthed()) enterAdmin();
+})();
+</script>
+</body>
+</html>
